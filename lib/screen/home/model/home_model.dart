@@ -1,5 +1,5 @@
 class HomeModel
 {
-  String? name,title,music;
-  HomeModel({this.name, this.music, this.title});
+  String? name,image,music;
+  HomeModel({this.name, this.music, this.image});
 }

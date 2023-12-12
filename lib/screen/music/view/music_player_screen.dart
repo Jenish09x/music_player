@@ -33,10 +33,11 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
         ),
         body: Column(
           children: [
+            const SizedBox(height: 100,),
             Image.asset(
               "assets/image/img1.jpeg",
-              height: 350,
-              width: 350,
+              height: 380,
+              width: 380,
             ),
             const SizedBox(
               height: 20,
@@ -47,7 +48,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Har Funn Maula",
+                    "Har Funn Maula(From Koi Jaane Na)",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                   SizedBox(
