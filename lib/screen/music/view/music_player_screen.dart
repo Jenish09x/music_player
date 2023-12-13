@@ -1,4 +1,7 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
+import 'package:music_player/screen/music/provider/music_player_provider.dart';
+import 'package:provider/provider.dart';
 
 class MusicPlayerScreen extends StatefulWidget {
   const MusicPlayerScreen({super.key});
@@ -8,8 +11,29 @@ class MusicPlayerScreen extends StatefulWidget {
 }
 
 class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
+  AssetsAudioPlayer player = AssetsAudioPlayer();
+  MusicPlayerProvider? providerR;
+  MusicPlayerProvider? providerW;
+
+  @override
+  void initState() {
+    super.initState();
+    player.open(
+        Audio(
+            "${context.read<MusicPlayerProvider>().musicList[context.read<MusicPlayerProvider>().index].music}"),
+        autoStart: false,
+        showNotification: true);
+
+    player.current.listen((event) {
+      Duration d1 = event!.audio.duration;
+      context.read<MusicPlayerProvider>().changTotalDuration(d1);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    providerR = context.read<MusicPlayerProvider>();
+    providerW = context.watch<MusicPlayerProvider>();
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -33,49 +57,62 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
         ),
         body: Column(
           children: [
-            const SizedBox(height: 100,),
+            const SizedBox(
+              height: 100,
+            ),
             Image.asset(
-              "assets/image/img1.jpeg",
+              "${providerW!.musicList[providerW!.index].image}",
               height: 380,
               width: 380,
             ),
             const SizedBox(
               height: 20,
             ),
-            const Align(
-              alignment: Alignment(-0.72, 0),
+            Align(
+              alignment: const Alignment(-0.72, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Har Funn Maula(From Koi Jaane Na)",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    "${providerW!.musicList[providerW!.index].name}",
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 15),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 5,
                   ),
-                  Text(
+                  const Text(
                     "Tanishk Bagchi, Vishal Dadlani",
                     style: TextStyle(fontSize: 12),
                   ),
                 ],
               ),
             ),
-            SizedBox(
-              width: MediaQuery.sizeOf(context).width * 0.94,
-              child: Slider(
-                value: 5,
-                onChanged: (value) {},
-                min: 1,
-                max: 10,
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30),
-              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            PlayerBuilder.currentPosition(
+              player: player,
+              builder: (context, position) => Column(
                 children: [
-                  Text("0:37"),
-                  Text("4:07"),
+                  SizedBox(
+                    width: MediaQuery.sizeOf(context).width * 0.94,
+                    child: Slider(
+                      value: position.inSeconds.toDouble(),
+                      onChanged: (value) {
+                        player.seek(Duration(seconds: value.toInt()));
+                      },
+                      min: 0,
+                      max: providerR!.totalDuration.inSeconds.toDouble(),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("$position"),
+                        Text("${providerW!.totalDuration}"),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -98,11 +135,20 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
                       size: 40,
                     )),
                 IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.play_circle,
-                      size: 60,
-                    )),
+                  onPressed: () {
+                    if (providerR!.isPlay == false) {
+                      player.play();
+                      providerR!.checkStatus(true);
+                    } else {
+                      player.pause();
+                      providerR!.checkStatus(false);
+                    }
+                  },
+                  icon: Icon(
+                    providerW!.isPlay ? Icons.pause_circle : Icons.play_circle,
+                    size: 60,
+                  ),
+                ),
                 IconButton(
                     onPressed: () {},
                     icon: const Icon(

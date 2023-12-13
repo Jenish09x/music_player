@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../provider/home_provider.dart';
 import 'music_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,13 +9,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  HomeProvider? providerR;
-  HomeProvider? providerW;
-
   @override
   Widget build(BuildContext context) {
-    providerR = context.read<HomeProvider>();
-    providerW = context.watch<HomeProvider>();
     return SafeArea(
       child: DefaultTabController(
         length: 2,
